@@ -5,14 +5,14 @@ import { asyncHandler } from "../utils/asynchandler.js";
 
 export const verifyJWT=asyncHandler(async(req,res,next)=>{
     try {
-        const token=req.cookies?.accessToken ||req.header("Authorization")?.replace("Bearer ","")// replace krdiya bearer token ko empt string
+        const token=req.cookies?.accessToken ||req.header("Authorization")?.replace("Bearer","")// replace krdiya bearer token ko empt string
      if(!token){
-        throw new ApiError(404,"unauthorized request");
+        throw new ApiError(401,"unauthorized request");
         
     }
     //  data ko decrypt karenge
-     const decodedToken=jwt.verify(token,process.env.ACESS_TOKEN_SECRET)
-     const user = await User.findByID(decodedToken?._id).select("-password -refreshToken")
+     const decodedToken=jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
+     const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
      if(!user){
         throw new ApiError(401,"invalid accessTOken")
      }
@@ -20,6 +20,6 @@ export const verifyJWT=asyncHandler(async(req,res,next)=>{
     req.user=user;
     next();
     } catch (error) {
-        throw new ApiError(401," error?.message"||"Inavalid accessToken")
+        throw new ApiError(401, error?.message||"Inavalid accessToken")
     }
 })

@@ -1,28 +1,31 @@
-import express from "express"
-import cors from "cors"
-// cookies ka kaam hai mai mere server se user ki cookies access kar pau and cred operations kar pau
+// Existing imports
+import express from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 
+const app = express();
 
-const app=express();
-app.use(cors({
-    origin:process.env.CORS_ORIGIN,
-    credentials:true
+// Middlewares
+app.use(cors({ origin: process.env.CORS_ORIGIN, credentials: true }));
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public"));
+app.use(cookieParser());
 
-}))
-app.use(express.json({
-    limit:"16kb",
-}))
-// it encodes the url
-// extended-objects ke andar objects dena
-app.use(express.urlencoded
-    ({extended:true,limit:"16kb"}))
-    // to kkeep assets,photos
-app.use(express.static("public"))
-app.use(cookieParser())
+// Routes import
+import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js";
+import playlistRouter from "./routes/playlist.routes.js";
+import commentRouter from "./routes/comment.routes.js";
+import likeRouter from "./routes/like.routes.js";
+import subscriptionRouter from "./routes/subscription.routes.js";
 
-// router import
-import userRouter from "./routes/user.routes.js"
+// Routes register
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/videos", videoRouter);
+app.use("/api/v1/playlists", playlistRouter);
+app.use("/api/v1/comments", commentRouter);
+app.use("/api/v1/likes", likeRouter);
+app.use("/api/v1/subscriptions", subscriptionRouter);
 
-app.use("/api/v1/users",userRouter)
-export { app }
+export { app };
